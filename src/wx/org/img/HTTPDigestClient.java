@@ -27,9 +27,9 @@ import org.json.JSONException;
 
 public class HTTPDigestClient { 
 	
-	private static String userName = "security_super";
-	private static String passWord = "lvzhou1-super";
-	private static String url = "https://oasisapi.h3c.com/api/o2oportal/queryBulkAuthUsers";
+	//private static String userName = "";
+	//private static String passWord = "";
+	private static String url = "";
     private URI serverURI = null;  
     String response = null;  
     
