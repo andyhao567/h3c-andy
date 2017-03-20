@@ -1,0 +1,25 @@
+<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+  <env:Header>
+    <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+      <auth:AuthInfo>100004eb52ca4d31a277cf82e6af4b6af896</auth:AuthInfo>
+    </auth:Authentication>
+  </env:Header>
+  <env:Body>
+    <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+      <get>
+        <filter>
+          <top xmlns="http://www.h3c.com/netconf/data:1.0">
+            <ARP>
+              <ArpTable>
+                <ArpEntry>
+                  <Ipv4Address></Ipv4Address>
+                  <MacAddress></MacAddress>
+                </ArpEntry>
+              </ArpTable>
+            </ARP>
+          </top>
+        </filter>
+      </get>
+    </rpc>
+  </env:Body>
+</env:Envelope>
