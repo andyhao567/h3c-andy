@@ -25,9 +25,9 @@ public class getSW {
 	/*This function will Authenticated in the server*/
 	public String sendSms() throws Exception {
 		
-		String webUrl = "http://192.168.0.1/soap/netconf/";
+		String webUrl = "http://172.16.0.1/soap/netconf/";
 		String mxml = getMAC.class.getClassLoader().getResource("Author.xml").getFile();
-		String soapActionString = "http://192.168.0.1";
+		String soapActionString = "http://172.16.0.1/";
 		
 		URL muUrl = new URL(webUrl);
 		HttpURLConnection hConnection = (HttpURLConnection) muUrl.openConnection();
@@ -37,7 +37,7 @@ public class getSW {
 		
 		hConnection.setRequestProperty("Content-Length", String.valueOf(buf.length));
 		hConnection.setRequestProperty("Content-Type", "text/xml;charset=UTF-8");
-		hConnection.setRequestProperty("SOAPAction", "http://10.1.1.254");
+		hConnection.setRequestProperty("SOAPAction", "http://172.16.0.1/");
 		hConnection.setRequestMethod("POST");
 		hConnection.setDoOutput(true);
 		hConnection.setDoInput(true);
@@ -107,8 +107,8 @@ public class getSW {
 		xml.append("</env:Envelope>");
 		
 		try {
-			String webUrl = "http://192.168.0.1/soap/netconf/";		
-			String soapActionString = "http://192.168.0.1";
+			String webUrl = "http://172.16.0.1/soap/netconf/";		
+			String soapActionString = "http://172.16.0.1";
 			URL realUrl = new URL(webUrl);
 	        URLConnection conn = realUrl.openConnection();
 	        conn.setRequestProperty("Content-Length", String.valueOf(xml.length()));

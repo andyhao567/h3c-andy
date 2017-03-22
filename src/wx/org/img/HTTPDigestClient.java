@@ -29,7 +29,7 @@ public class HTTPDigestClient {
 	
 	//private static String userName = "";
 	//private static String passWord = "";
-	private static String url = "";
+	private static String url = "https://oasisapi.h3c.com/api/o2oportal/queryBulkAuthUsers";
     private URI serverURI = null;  
     String response = null;  
     
@@ -95,13 +95,15 @@ public class HTTPDigestClient {
                 		headImgUrl = jsonObject.getString("headimgurl");
                 		String usrmac = jsonObject.getString("user_mac");
 						System.out.println("[HTTPDigestClient send Info] the nickname is  " + nickname + " and the headerImage is " + headImgUrl + " and the userMac is " + usrmac);
-						String selSQL = "select * from weixin where user_mac = '" + usrmac + "'";
+						String selSQL = "select * from sheepwall_app_wifiuser where mac_addr = '" + usrmac + "'";
 						try {
 							writeData wData = new writeData();
 							wData.getConnection();
 							ResultSet rs = wData.selectSQL(selSQL);
 							if (!rs.next()){
-								String inSQL = "insert into weixin (user_mac, nickname, head_img) values ('"+usrmac+"','"+nickname+"','"+headImgUrl+"')";
+								String os_type = "Unknown";
+								String local_ip = "127.0.0.1";
+								String inSQL = "insert into sheepwall_app_wifiuser (wechat_nickname, wechat_head_img, os_type, mac_addr, local_ip) values ('"+nickname+"','"+headImgUrl+"','"+os_type +"','"+usrmac +"','"+local_ip  +"')";
 								boolean flag = wData.insertSQL(inSQL);
 								if(flag){
 									System.out.println("[HTTPDigestClient send Info] This record has insert into the database " + usrmac);

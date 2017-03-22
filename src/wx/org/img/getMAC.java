@@ -26,9 +26,9 @@ public class getMAC extends Thread{
 	private Logger mLogger;
 	private String pMAC;
 	
-	private static String userName = "";
-	private static String passWord = "";
-	private static String url = "";
+	private static String userName = "security_super";
+	private static String passWord = "lvzhou1-super";
+	private static String url = "https://oasisapi.h3c.com/api/o2oportal/queryBulkAuthUsers";
 	private static List<String> headerList = new ArrayList();
 	private static String devIP;
 	private static String picPath = "c:\\sheep";

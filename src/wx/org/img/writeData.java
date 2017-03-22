@@ -31,9 +31,9 @@ public class writeData {
 	
 	public static void getConnection() {
 		
-		String url = "jdbc:mysql://192.168.0.17:3306/user_info?useUnicode=true&characterEncoding=utf8";
+		String url = "jdbc:mysql://192.168.187.132:3306/sheepwall?useUnicode=true&characterEncoding=utf8";
 		String name = "root";
-		String pass = "123456";
+		String pass = "789uio@jkl";
 				
 		try {
 			conn = (Connection) DriverManager.getConnection(url, name, pass);
