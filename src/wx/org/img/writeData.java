@@ -31,7 +31,21 @@ public class writeData {
 	
 	public static void getConnection() {
 		
-		String url = "jdbc:mysql://192.168.187.132:3306/sheepwall?useUnicode=true&characterEncoding=utf8";
+		String url = "jdbc:mysql://127.0.0.1:3306/sheepwall?useUnicode=true&characterEncoding=utf8";
+		String name = "root";
+		String pass = "789uio@jkl";
+				
+		try {
+			conn = (Connection) DriverManager.getConnection(url, name, pass);
+			System.out.println("[writeData getConnection info] This program has connect to the mysql server");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void getConnection(String geturl) {
+		
+		String url = geturl;
 		String name = "root";
 		String pass = "789uio@jkl";
 				

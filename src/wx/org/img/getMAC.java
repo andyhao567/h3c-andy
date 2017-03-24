@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -31,7 +32,7 @@ public class getMAC extends Thread{
 	private static String url = "https://oasisapi.h3c.com/api/o2oportal/queryBulkAuthUsers";
 	private static List<String> headerList = new ArrayList();
 	private static String devIP;
-	private static String picPath = "c:\\sheep";
+	private static String picPath = "/home/ubuntu/sheepwall_prj/static/assets/images/wifiuserimgs/headimg";
 	private static File file = new File(picPath);
 
 	public getMAC(BlockingQueue<String> phMACs, Lock macLock, Logger mLogger) {
@@ -56,8 +57,29 @@ public class getMAC extends Thread{
 				/*This gSW will call the getSW class*/
 				getSW gSW = new getSW(pMAC);
 				try {
-					Thread.sleep(2500);//保证senSms()有足够的时间通过MAC_soap协议获取到设备的IP
+					Thread.sleep(2500);
 					devIP = gSW.sendSms();
+					/*SQL mac_ip*/
+					writeData wData = new writeData();
+					String insertsql = "insert into mac_ip (IP, Mac) values ('"+devIP+"','"+pMAC+"')";
+					String selSQL = "select * from mac_ip where Mac = '" + pMAC + "'";
+					
+					writeData.getConnection();
+					ResultSet rs = wData.selectSQL(selSQL);
+					
+					if (!rs.next()){
+						boolean sflag = wData.insertSQL(insertsql);
+						
+						if(sflag){
+							System.out.printf("[getMac run Info] This record %s _ %s has insert into the database " , devIP, pMAC + "\n");
+							wData.deconnSQL();
+						}else{
+							System.out.printf("[getMac run Error] This record does not insert into the mac-IP database");
+							wData.deconnSQL();
+						}
+					}
+						
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -110,7 +132,7 @@ public class getMAC extends Thread{
 				file.mkdirs();
 			}
 			
-			OutputStream oStream = new FileOutputStream(file.getPath() + "\\" + devIP+".jpg");
+			OutputStream oStream = new FileOutputStream(file.getPath() + "/" + devIP+".jpg");
 			while((len = iStream.read(bs)) != -1){
 				oStream.write(bs, 0, len);
 			}

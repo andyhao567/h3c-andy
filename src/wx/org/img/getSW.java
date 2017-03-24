@@ -25,9 +25,9 @@ public class getSW {
 	/*This function will Authenticated in the server*/
 	public String sendSms() throws Exception {
 		
-		String webUrl = "http://172.16.0.1/soap/netconf/";
+		String webUrl = "http://172.16.0.2/soap/netconf/";
 		String mxml = getMAC.class.getClassLoader().getResource("Author.xml").getFile();
-		String soapActionString = "http://172.16.0.1/";
+		String soapActionString = "http://172.16.0.2/";
 		
 		URL muUrl = new URL(webUrl);
 		HttpURLConnection hConnection = (HttpURLConnection) muUrl.openConnection();
@@ -107,8 +107,8 @@ public class getSW {
 		xml.append("</env:Envelope>");
 		
 		try {
-			String webUrl = "http://172.16.0.1/soap/netconf/";		
-			String soapActionString = "http://172.16.0.1";
+			String webUrl = "http://172.16.0.2/soap/netconf/";		
+			String soapActionString = "http://172.16.0.2";
 			URL realUrl = new URL(webUrl);
 	        URLConnection conn = realUrl.openConnection();
 	        conn.setRequestProperty("Content-Length", String.valueOf(xml.length()));
@@ -127,7 +127,7 @@ public class getSW {
 	        	//System.out.println("[getMAC getInfo Debug] This Mac-IP Information is: " + result);
 	        }
 		} catch (Exception e) {
-			System.out.println("[getSW getInfo Error]·¢ËÍ POSTÊý¾Ý³öÏÖÒì³££¡" +e);
+			System.out.println("[getSW getInfo Error]ï¿½ï¿½ï¿½ï¿½ POSTï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½ï¿½ì³£ï¿½ï¿½" +e);
 			e.printStackTrace();
 		}        
         

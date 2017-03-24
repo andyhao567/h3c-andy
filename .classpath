@@ -2,13 +2,14 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="D:/sheep_wall/jar/httpcomponents-client-4.5.3/lib/httpclient-4.5.3.jar"/>
-	<classpathentry kind="lib" path="D:/sheep_wall/jar/httpcomponents-client-4.5.3/lib/httpcore-4.4.6.jar"/>
-	<classpathentry kind="lib" path="D:/sheep_wall/jar/httpcomponents-client-4.5.3/lib/commons-codec-1.9.jar"/>
-	<classpathentry kind="lib" path="D:/sheep_wall/jar/httpcomponents-client-4.5.3/lib/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="D:/sheep_wall/jar/org.apache.commons.httpclient.jar"/>
-	<classpathentry kind="lib" path="D:/sheep_wall/jar/java-json.jar"/>
-	<classpathentry kind="lib" path="D:/sheep_wall/jar/json-lib-2.4-jdk15.jar"/>
-	<classpathentry kind="lib" path="D:/sheep_wall/jar/mysql-connector-java-5.1.41-bin.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/桌面/jar/commons-pool-1.5.4.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/桌面/jar/httpcomponents-client-4.5.3/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/桌面/jar/httpcomponents-client-4.5.3/lib/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/桌面/jar/httpcomponents-client-4.5.3/lib/httpclient-4.5.3.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/桌面/jar/httpcomponents-client-4.5.3/lib/httpcore-4.4.6.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/桌面/jar/java-json.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/桌面/jar/json-lib-2.4-jdk15.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/桌面/jar/mysql-connector-java-5.1.41-bin.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/桌面/jar/org.apache.commons.httpclient.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
