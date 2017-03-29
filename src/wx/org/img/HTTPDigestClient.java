@@ -97,31 +97,36 @@ public class HTTPDigestClient {
 						System.out.println("[HTTPDigestClient send Info] the nickname is  " + nickname + " and the headerImage is " + headImgUrl + " and the userMac is " + usrmac);
 						String selSQL = "select * from sheepwall_app_wifiuser where mac_addr = '" + usrmac + "'";
 						String seldevIP = "select IP from mac_ip where Mac = '" + usrmac + "'";
-						
-						try {
-							writeData wData = new writeData();
-							wData.getConnection();
-							ResultSet rs = wData.selectSQL(selSQL);
-							ResultSet rsDevIP = wData.selectSQL(seldevIP);
-							if ((!rs.next()) && (rsDevIP.next())){
-								String os_type = "Unknown";
-								String local_ip = rsDevIP.getString("IP");
-								String inSQL = "insert into sheepwall_app_wifiuser (wechat_nickname, wechat_head_img, os_type, mac_addr, local_ip) values ('"+nickname+"','"+headImgUrl+"','"+os_type +"','"+usrmac +"','"+local_ip  +"')";
-								boolean flag = wData.insertSQL(inSQL);
-								if(flag){
-									System.out.println("[HTTPDigestClient send Info] This record has insert into the database " + usrmac);
-									wData.deconnSQL();
+						if(!headImgUrl.isEmpty()){
+							try {
+								writeData wData = new writeData();
+								wData.getConnection();
+								ResultSet rs = wData.selectSQL(selSQL);
+								ResultSet rsDevIP = wData.selectSQL(seldevIP);
+								if ((!rs.next()) && (rsDevIP.next())){
+									String os_type = "";
+									String local_ip = rsDevIP.getString("IP");
+									String inSQL = "insert into sheepwall_app_wifiuser (wechat_nickname, wechat_head_img, os_type, mac_addr, local_ip) values ('"+nickname+"','"+headImgUrl+"','"+os_type +"','"+usrmac +"','"+local_ip  +"')";
+									boolean flag = wData.insertSQL(inSQL);
+									if(flag){
+										System.out.println("[HTTPDigestClient send Info] This record has insert into the {sheepwall_app_wifiuser} " + usrmac);
+										wData.deconnSQL();
+									}
+								}else{
+									System.out.println("[HTTPDigestClient send Error] This record has existed in the {sheepwall_app_wifiuser} " + usrmac);
 								}
-							}else{
-								System.out.println("[HTTPDigestClient send Error] This record has existed in the database " + usrmac);
+
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 
-						} catch (Exception e) {
-							e.printStackTrace();
+							
+							httpClient.getConnectionManager().shutdown();
+						}else{
+							System.out.println("[HTTPDigestClient send Error] This record does not insert into the database, because the headimg is null ");
+							httpClient.getConnectionManager().shutdown();
 						}
 
-						
-						httpClient.getConnectionManager().shutdown();
                 	}
 				} catch (JSONException e) {
 					e.printStackTrace();

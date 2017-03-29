@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -57,27 +58,21 @@ public class getMAC extends Thread{
 				/*This gSW will call the getSW class*/
 				getSW gSW = new getSW(pMAC);
 				try {
-					Thread.sleep(2500);
+					Thread.sleep(1*60*1000);
 					devIP = gSW.sendSms();
-					/*SQL mac_ip*/
-					writeData wData = new writeData();
-					String insertsql = "insert into mac_ip (IP, Mac) values ('"+devIP+"','"+pMAC+"')";
-					String selSQL = "select * from mac_ip where Mac = '" + pMAC + "'";
-					
-					writeData.getConnection();
-					ResultSet rs = wData.selectSQL(selSQL);
-					
-					if (!rs.next()){
-						boolean sflag = wData.insertSQL(insertsql);
-						
-						if(sflag){
-							System.out.printf("[getMac run Info] This record %s _ %s has insert into the database " , devIP, pMAC + "\n");
-							wData.deconnSQL();
+					if(devIP == null){
+						System.out.printf("[getMac run Debug] This twice loop for get devIP \n");
+						Thread.sleep(1*60*3000);
+						devIP = gSW.sendSms();
+						if(devIP!=null){
+							controlSQL();
 						}else{
-							System.out.printf("[getMac run Error] This record does not insert into the mac-IP database");
-							wData.deconnSQL();
+							System.out.printf("[getMac run Debug] This third loop for get devIP, but it still is null \n");
 						}
+					}else{
+						controlSQL();
 					}
+					
 						
 
 				} catch (Exception e) {
@@ -93,8 +88,12 @@ public class getMAC extends Thread{
 			        stringEntity.setContentEncoding("UTF-8");
 			    	hPost.setEntity(stringEntity);
 			    	String hImgURL = hClient.send(hPost);
-			    	//System.out.println("[getMAC run Info] This headImgUrl is: " + hImgURL);
-			    	if((!hImgURL.isEmpty()) && (!headerList.contains(hImgURL))){
+//			    	if(hImgURL == null){
+//			    		System.out.println("[getMAC run Warn] This section has run twice and it will get the url from oasis");
+//			    		String hImgURL2 = hClient.send(hPost);
+//			    		hImgURL = hImgURL2;
+//			    	}
+			        if((hImgURL!=null) && (!headerList.contains(hImgURL))){
 			    		File imgFile = new File(file.getPath()+ "\\" +devIP +".jpg");
 				    	if(!imgFile.exists()){
 				    		getPageImg(hImgURL, devIP);
@@ -104,7 +103,7 @@ public class getMAC extends Thread{
 				    	}
 
 			    	}else{
-			    		System.out.println("[getMAC run Warn] This url is null");
+			    		System.out.println("[getMAC run Warn] This image url is null ");
 			    	}
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
@@ -116,7 +115,30 @@ public class getMAC extends Thread{
 
 			}
 		}
-    /*
+
+	private void controlSQL() throws SQLException {
+		writeData wData = new writeData();
+		String insertsql = "insert into mac_ip (IP, Mac) values ('"+devIP+"','"+pMAC+"')";
+		String selSQL = "select * from mac_ip where Mac = '" + pMAC + "'";
+		
+		writeData.getConnection();
+		ResultSet rs = wData.selectSQL(selSQL);
+		
+		if (!rs.next()){
+			boolean sflag = wData.insertSQL(insertsql);
+			
+			if(sflag){
+				System.out.printf("[getMac controlSQL Info] This record %s <-> %s has insert into the {mac_ip} \n" , devIP, pMAC);
+				wData.deconnSQL();
+			}else{
+				System.out.printf("[getMac controlSQL Error] This record does not insert into the {mac_IP} database");
+				wData.deconnSQL();
+			}
+		}
+		
+	}
+
+	/*
      * This function will download the weChat header Image from the Web*/
 	private static void getPageImg(String hImgURL, String devIP2) {
 		StringBuffer sBuffer = new StringBuffer();

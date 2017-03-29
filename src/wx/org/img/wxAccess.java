@@ -20,8 +20,7 @@ public class wxAccess {
 		logServer lServer = new logServer(phMACs, macLock, mLogger);
 		lServer.start();
 		
-		Thread.sleep(100);
-		
+		Thread.sleep(1000);		
 		getMAC gMac = new getMAC(phMACs, macLock, mLogger);
 		gMac.start();
 		
