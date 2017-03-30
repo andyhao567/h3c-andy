@@ -11,7 +11,9 @@ import java.net.URLConnection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Logger;
@@ -45,6 +47,7 @@ public class getMAC extends Thread{
 	public void run(){
 		System.out.println("[getMAC run Debug] This getMAC Thread has start");
 		boolean flag = true;
+		Map<String, String> rsMap = new HashMap<String, String>();
 		while(flag ){
 			int macNum = phMACs.size(); 
 			if(macNum>0){
@@ -55,59 +58,69 @@ public class getMAC extends Thread{
 				macLock.unlock();
 				System.out.println("[getMAC run Debug] I have release the lock and the phone MAC is: " + pMAC);
 				
-				/*This gSW will call the getSW class*/
-				getSW gSW = new getSW(pMAC);
-				try {
-					Thread.sleep(1*60*1000);
-					devIP = gSW.sendSms();
-					if(devIP == null){
-						System.out.printf("[getMac run Debug] This twice loop for get devIP \n");
-						Thread.sleep(1*60*3000);
+				String macSelect = "select * from sheepwall_app_wifiuser where mac_addr = '" + pMAC + "'";;
+				writeData wData = new writeData();
+				wData.getConnection();
+				ResultSet rs = wData.selectSQL(macSelect);
+				rsMap = wData.showResult(rs);
+				String sql_ip = rsMap.get("usr_ip");
+				String sql_img = rsMap.get("head_img");
+				wData.deconnSQL();
+				if( (sql_ip == null) && (sql_img == null) ){
+					/*This gSW will call the getSW class*/
+					getSW gSW = new getSW(pMAC);
+					try {
+						Thread.sleep(3500);
 						devIP = gSW.sendSms();
-						if(devIP!=null){
-							controlSQL();
+						if(devIP == null){
+							System.out.printf("[getMac run Debug] This twice loop for get devIP \n");
+							Thread.sleep(1*60*1050);
+							devIP = gSW.sendSms();
+							if(devIP!=null){
+								controlSQL();
+							}else{
+								System.out.printf("[getMac run Debug] This third loop for get devIP, but it still is null \n");
+							}
 						}else{
-							System.out.printf("[getMac run Debug] This third loop for get devIP, but it still is null \n");
+							controlSQL();
 						}
-					}else{
-						controlSQL();
-					}
-					
 						
+							
 
-				} catch (Exception e) {
-					e.printStackTrace();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					HTTPDigestClient hClient = new HTTPDigestClient(userName, passWord);
+					HttpPost hPost = new HttpPost(url);
+					try {
+						String param = "{\"macs\":[\""+pMAC+"\"],\"macType\":1}";
+						StringEntity stringEntity = new StringEntity(param);
+				        stringEntity.setContentType("application/json");
+				        stringEntity.setContentEncoding("UTF-8");
+				    	hPost.setEntity(stringEntity);
+				    	String hImgURL = hClient.send(hPost);
+				        if((hImgURL!=null) && (!headerList.contains(hImgURL))){
+				    		File imgFile = new File(file.getPath()+ "/" +devIP +".jpg");
+					    	if(!imgFile.exists()){
+					    		//System.out.println(imgFile);
+					    		getPageImg(hImgURL, devIP);
+						    	headerList.add(hImgURL);
+					    	}else{
+					    		System.out.println("[getMAC run Warn] This header Image has download before \n");
+					    	}
+
+				    	}else{
+				    		System.out.println("[getMAC run Warn] This image url is null ");
+				    	}
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+				}else{
+					System.out.println("[getMAC run Info] This user has existed in the {sheepwall_app_wifiuser} \n");
 				}
 				
-				HTTPDigestClient hClient = new HTTPDigestClient(userName, passWord);
-				HttpPost hPost = new HttpPost(url);
-				try {
-					String param = "{\"macs\":[\""+pMAC+"\"],\"macType\":1}";
-					StringEntity stringEntity = new StringEntity(param);
-			        stringEntity.setContentType("application/json");
-			        stringEntity.setContentEncoding("UTF-8");
-			    	hPost.setEntity(stringEntity);
-			    	String hImgURL = hClient.send(hPost);
-//			    	if(hImgURL == null){
-//			    		System.out.println("[getMAC run Warn] This section has run twice and it will get the url from oasis");
-//			    		String hImgURL2 = hClient.send(hPost);
-//			    		hImgURL = hImgURL2;
-//			    	}
-			        if((hImgURL!=null) && (!headerList.contains(hImgURL))){
-			    		File imgFile = new File(file.getPath()+ "\\" +devIP +".jpg");
-				    	if(!imgFile.exists()){
-				    		getPageImg(hImgURL, devIP);
-					    	headerList.add(hImgURL);
-				    	}else{
-				    		System.out.println("[getMAC run Warn] This header Image has download before");
-				    	}
+				
 
-			    	}else{
-			    		System.out.println("[getMAC run Warn] This image url is null ");
-			    	}
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
 				
 			}else{
 				continue;
@@ -118,8 +131,8 @@ public class getMAC extends Thread{
 
 	private void controlSQL() throws SQLException {
 		writeData wData = new writeData();
-		String insertsql = "insert into mac_ip (IP, Mac) values ('"+devIP+"','"+pMAC+"')";
-		String selSQL = "select * from mac_ip where Mac = '" + pMAC + "'";
+		String insertsql = "insert into sheepwall_app_mac_ip (IP, Mac) values ('"+devIP+"','"+pMAC+"')";
+		String selSQL = "select * from sheepwall_app_mac_ip where Mac = '" + pMAC + "'";
 		
 		writeData.getConnection();
 		ResultSet rs = wData.selectSQL(selSQL);
@@ -128,10 +141,10 @@ public class getMAC extends Thread{
 			boolean sflag = wData.insertSQL(insertsql);
 			
 			if(sflag){
-				System.out.printf("[getMac controlSQL Info] This record %s <-> %s has insert into the {mac_ip} \n" , devIP, pMAC);
+				System.out.printf("[getMac controlSQL Info] This record %s <-> %s has insert into the {sheepwall_app_mac_ip} \n" , devIP, pMAC);
 				wData.deconnSQL();
 			}else{
-				System.out.printf("[getMac controlSQL Error] This record does not insert into the {mac_IP} database");
+				System.out.printf("[getMac controlSQL Error] This record does not insert into the {sheepwall_app_mac_IP} database");
 				wData.deconnSQL();
 			}
 		}
@@ -163,6 +176,7 @@ public class getMAC extends Thread{
 			
 		}catch (Exception e) {
 			e.printStackTrace();
+		    
 		}
 		
 	}

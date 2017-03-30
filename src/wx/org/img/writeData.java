@@ -3,6 +3,8 @@ package wx.org.img;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
@@ -15,17 +17,23 @@ public class writeData {
 	
 	
 	
-	public void showResult(ResultSet rs){
+	public Map showResult(ResultSet rs){
+		Map<String, String> rsMap = new HashMap<String, String>();
 		try {
 			while(rs.next()){
-				String usr_mac = rs.getString("user_mac");
-				String usr_ip = rs.getString("user_ip");
-				String head_img = rs.getString("head_img");
-				System.out.println("[writeData getConnection info] This user infor is: " + usr_mac +"\t" +usr_ip + "\t"+ head_img);
+				String usr_mac = rs.getString("mac_addr");
+				String usr_ip = rs.getString("local_ip");
+				String head_img = rs.getString("wechat_head_img");
+				//System.out.println("[writeData getConnection info] This user infor is: " + usr_mac +"\t" +usr_ip + "\t"+ head_img);
+				rsMap.put("usr_mac", usr_mac);
+				rsMap.put("usr_ip", usr_ip);
+				rsMap.put("head_img", head_img);
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return rsMap;
 	}
 	
 	
@@ -61,6 +69,7 @@ public class writeData {
 		try {
 			if(conn != null){
 				conn.close();
+				System.out.println("[writeData deconnSQL info] This program has deconnect to the mysql server");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

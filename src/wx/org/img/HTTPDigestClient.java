@@ -1,10 +1,12 @@
 package wx.org.img;
 
 
+import java.awt.List;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Pattern;
 
@@ -22,6 +24,9 @@ import org.apache.http.impl.auth.DigestSchemeFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.mysql.fabric.xmlrpc.base.Array;
+
 import org.json.JSONException;
 
 
@@ -72,9 +77,10 @@ public class HTTPDigestClient {
         String output = null;
         String nickname = null;
         String headImgUrl = null;
-        String img = null;
+        String usrmac = null;
 		String reg = "\"(http:[^\"]*)"; //Patter the headURL
 		Pattern pattern = Pattern.compile(reg);
+	    ArrayList<String> noAuthList = new ArrayList();
 		
         try {  
             if (httpClient == null) {  
@@ -93,11 +99,11 @@ public class HTTPDigestClient {
                 		JSONObject jsonObject = (JSONObject)re_data.get(i);
                 		nickname = jsonObject.getString("nickname");
                 		headImgUrl = jsonObject.getString("headimgurl");
-                		String usrmac = jsonObject.getString("user_mac");
+                		usrmac = jsonObject.getString("user_mac");
 						System.out.println("[HTTPDigestClient send Info] the nickname is  " + nickname + " and the headerImage is " + headImgUrl + " and the userMac is " + usrmac);
 						String selSQL = "select * from sheepwall_app_wifiuser where mac_addr = '" + usrmac + "'";
-						String seldevIP = "select IP from mac_ip where Mac = '" + usrmac + "'";
-						if(!headImgUrl.isEmpty()){
+						String seldevIP = "select IP from sheepwall_app_mac_ip where Mac = '" + usrmac + "'";
+						if(headImgUrl != null){
 							try {
 								writeData wData = new writeData();
 								wData.getConnection();
@@ -118,6 +124,7 @@ public class HTTPDigestClient {
 
 							} catch (Exception e) {
 								e.printStackTrace();
+								throw e;
 							}
 
 							
@@ -130,13 +137,15 @@ public class HTTPDigestClient {
                 	}
 				} catch (JSONException e) {
 					e.printStackTrace();
+					noAuthList.add(usrmac);
+					throw e;
 				}
            	
             }
                       
   
         } catch (Exception e) {  
-              
+              e.printStackTrace();
         }  
         return headImgUrl;  
     }  
